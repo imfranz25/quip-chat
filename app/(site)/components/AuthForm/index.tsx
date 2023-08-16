@@ -1,21 +1,27 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { BsGithub, BsGoogle } from 'react-icons/bs';
+import React, { useCallback, useState } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 
 import { AuthVariant } from '../../types';
+import Input from '@/app/components/Input';
+import Button from '@/app/components/Button';
+import AuthSocialButton from '../AuthSocialButton';
 
 const AuthForm = () => {
   const [variant, setVariant] = useState<AuthVariant>('LOGIN');
   const [isLoading, setIsLoading] = useState(false);
 
   const toggleVariant = useCallback(() => {
+    if (isLoading) return;
+
     if (variant === 'LOGIN') {
       setVariant('REGISTER');
     } else {
       setVariant('LOGIN');
     }
-  }, [variant]);
+  }, [variant, isLoading]);
 
   const {
     register,
@@ -32,6 +38,8 @@ const AuthForm = () => {
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
 
+    console.log(data);
+
     if (variant === 'REGISTER') {
       // Register API
     } else {
@@ -41,15 +49,97 @@ const AuthForm = () => {
     setIsLoading(false);
   };
 
-  const socialActions = (action: string) => {
+  const socialActions = useCallback((action: string) => {
     setIsLoading(true);
 
     // Social Sign in
+    console.log(action);
 
     setIsLoading(false);
-  };
+  }, []);
 
-  return <div>AuthForm2</div>;
+  return (
+    <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {variant === 'REGISTER' && (
+            <Input
+              id="name"
+              label="Name"
+              errors={errors}
+              register={register}
+              disabled={isLoading}
+            />
+          )}
+          <Input
+            id="email"
+            type="email"
+            errors={errors}
+            register={register}
+            disabled={isLoading}
+            label="Email address"
+          />
+          <Input
+            id="password"
+            type="password"
+            label="Password"
+            errors={errors}
+            register={register}
+            disabled={isLoading}
+          />
+          {variant === 'REGISTER' && (
+            <Input
+              type="password"
+              errors={errors}
+              register={register}
+              disabled={isLoading}
+              id="confirm-password"
+              label="Confirm Password"
+            />
+          )}
+          <div>
+            <Button fullWidth disabled={isLoading} type="submit">
+              {variant === 'LOGIN' ? 'Sign-in' : 'Sign-up'}
+            </Button>
+          </div>
+        </form>
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-2 text-gray-500">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-6 flex gap-6">
+            <AuthSocialButton
+              icon={BsGithub}
+              onClick={() => socialActions('github')}
+            />
+            <AuthSocialButton
+              icon={BsGoogle}
+              onClick={() => socialActions('google')}
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500">
+          <div>
+            {variant === 'LOGIN'
+              ? 'New to quip chat?'
+              : 'Already have an account?'}
+          </div>
+          <div onClick={toggleVariant} className="underline cursor-pointer">
+            {variant === 'LOGIN' ? 'Create an account' : 'Login'}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default AuthForm;
