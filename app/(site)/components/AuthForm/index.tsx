@@ -1,10 +1,11 @@
 'use client';
 
+import axios from 'axios';
 import { BsGithub, BsGoogle } from 'react-icons/bs';
 import React, { useCallback, useState } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 
-import { AuthVariant } from '../../types';
+import { AuthVariant } from '@/app/types';
 import Input from '@/app/components/Input';
 import Button from '@/app/components/Button';
 import AuthSocialButton from '../AuthSocialButton';
@@ -32,17 +33,18 @@ const AuthForm = () => {
       name: '',
       email: '',
       password: '',
+      confirmPassword: '',
     },
   });
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
 
-    console.log(data);
-
     if (variant === 'REGISTER') {
-      // Register API
-    } else {
+      axios.post('/api/register', data);
+    }
+
+    if (variant === 'LOGIN') {
       // Next Auth Sign in
     }
 
@@ -93,7 +95,7 @@ const AuthForm = () => {
               errors={errors}
               register={register}
               disabled={isLoading}
-              id="confirm-password"
+              id="confirmPassword"
               label="Confirm Password"
             />
           )}
