@@ -66,11 +66,18 @@ const AuthForm = () => {
     setIsLoading(false);
   };
 
-  const socialActions = useCallback((action: string) => {
+  const socialActions = useCallback(async (action: string) => {
     setIsLoading(true);
 
-    // Social Sign in
-    console.log(action);
+    const socialAuthResponse = await signIn(action, { redirect: false });
+
+    if (socialAuthResponse?.error) {
+      toast.error('Invalid credentials');
+    }
+
+    if (socialAuthResponse?.ok && !socialAuthResponse?.error) {
+      toast.success('Login success');
+    }
 
     setIsLoading(false);
   }, []);
