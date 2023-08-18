@@ -1,6 +1,8 @@
 'use client';
 
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import { signIn } from 'next-auth/react';
 import { BsGithub, BsGoogle } from 'react-icons/bs';
 import React, { useCallback, useState } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
@@ -9,7 +11,6 @@ import { AuthVariant } from '@/app/types';
 import Input from '@/app/components/Input';
 import Button from '@/app/components/Button';
 import AuthSocialButton from '../AuthSocialButton';
-import { toast } from 'react-hot-toast';
 
 const AuthForm = () => {
   const [variant, setVariant] = useState<AuthVariant>('LOGIN');
@@ -48,7 +49,18 @@ const AuthForm = () => {
     }
 
     if (variant === 'LOGIN') {
-      // Next Auth Sign in
+      const authResponse = await signIn('credentials', {
+        ...data,
+        redirect: false,
+      });
+
+      if (authResponse?.error) {
+        toast.error('Invalid credentials');
+      }
+
+      if (authResponse?.ok && !authResponse?.error) {
+        toast.success('Login success');
+      }
     }
 
     setIsLoading(false);
