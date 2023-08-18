@@ -9,6 +9,7 @@ import { AuthVariant } from '@/app/types';
 import Input from '@/app/components/Input';
 import Button from '@/app/components/Button';
 import AuthSocialButton from '../AuthSocialButton';
+import { toast } from 'react-hot-toast';
 
 const AuthForm = () => {
   const [variant, setVariant] = useState<AuthVariant>('LOGIN');
@@ -37,11 +38,13 @@ const AuthForm = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
 
     if (variant === 'REGISTER') {
-      axios.post('/api/register', data);
+      await axios
+        .post('/api/register', data)
+        .catch(() => toast.error('Something went wrong'));
     }
 
     if (variant === 'LOGIN') {
