@@ -2,9 +2,9 @@
 
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { BsGithub, BsGoogle } from 'react-icons/bs';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 
 import { AuthVariant } from '@/app/types';
@@ -13,8 +13,15 @@ import Button from '@/app/components/Button';
 import AuthSocialButton from '../AuthSocialButton';
 
 const AuthForm = () => {
+  const session = useSession();
   const [variant, setVariant] = useState<AuthVariant>('LOGIN');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (session?.status === 'authenticated') {
+      console.log('Authenticated');
+    }
+  }, [session?.status]);
 
   const toggleVariant = useCallback(() => {
     if (isLoading) return;
