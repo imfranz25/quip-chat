@@ -55,7 +55,8 @@ const AuthForm = () => {
       await axios
         .post('/api/register', data)
         .then(() => signIn('credentials', data))
-        .catch(() => toast.error('Something went wrong'));
+        .catch(() => toast.error('Something went wrong'))
+        .finally(() => setIsLoading(false));
     }
 
     if (variant === 'LOGIN') {
@@ -66,6 +67,7 @@ const AuthForm = () => {
 
       if (authResponse?.error) {
         toast.error('Invalid credentials');
+        setIsLoading(false);
       }
 
       if (authResponse?.ok && !authResponse?.error) {
@@ -73,8 +75,6 @@ const AuthForm = () => {
         router.push('/users');
       }
     }
-
-    setIsLoading(false);
   };
 
   const socialActions = useCallback(async (action: string) => {
