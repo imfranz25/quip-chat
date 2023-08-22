@@ -25,7 +25,7 @@ const Form = () => {
     async (data) => {
       setValue('message', '', { shouldValidate: true });
 
-      await axios.post('/api/message', {
+      await axios.post('/api/messages', {
         ...data,
         conversationId,
       });
@@ -35,20 +35,23 @@ const Form = () => {
 
   return (
     <div className="py-4 px-4 bg-white border-t flex items-center gap-2 lg:gap-4 w-full">
-      <HiPhoto
-        size={30}
-        className="text-sky-500 cursor-pointer hover:text-sky-600 transition"
-      />
+      <label htmlFor="fileUpload">
+        <HiPhoto
+          size={30}
+          className="text-sky-500 cursor-pointer hover:text-sky-600 transition"
+        />
+      </label>
+      <input id="fileUpload" type="file" accept="image/*" hidden />
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex items-center gap-2 lg:gap-4 w-full"
       >
         <MessageInput
-          id="message"
-          register={register}
-          errors={errors}
-          placeholder="Write a message"
           required
+          id="message"
+          errors={errors}
+          register={register}
+          placeholder="Write a message"
         />
         <button
           type="submit"
