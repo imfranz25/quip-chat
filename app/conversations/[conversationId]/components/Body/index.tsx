@@ -19,7 +19,7 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
   console.log(setMessages);
 
   useEffect(() => {
-    axios.post(`/api/conversation/${conversationId}/seen`);
+    axios.post(`/api/conversations/${conversationId}/seen`);
   }, [conversationId]);
 
   return (
