@@ -28,10 +28,12 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({ isOpen, onClose }) => {
       .delete(`/api/conversations/${conversationId}`)
       .then(() => {
         onClose();
+        toast.success('Conversation deleted');
+
         router.push('/conversations');
         router.refresh();
       })
-      .catch(() => toast.error('Internal Server Error'))
+      .catch((error) => toast.error(error))
       .finally(() => setIsLoading(false));
   }, [conversationId, onClose, router]);
 
