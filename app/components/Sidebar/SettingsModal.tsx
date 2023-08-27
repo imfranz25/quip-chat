@@ -11,6 +11,7 @@ import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
 import Modal from '../Modal';
 import Input from '../Input';
+import Button from '../Button';
 import { fileToBase64 } from '@/app/libs/filetoBase64';
 
 interface SettingsModalProps {
@@ -95,11 +96,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 required
               />
             </div>
-            <div>
-              <label
-                htmlFor=""
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
+            <div className="mt-3">
+              <label className="block text-sm font-medium leading-6 text-gray-900">
                 Photo
               </label>
               <div className="mt-2 flex items-center gap-x-3">
@@ -133,7 +131,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
             </div>
           </div>
-          <div className="mt-6 flex items-center"></div>
+          <div className="mt-6 flex items-center justify-end gap-x-6">
+            <Button secondary disabled={isLoading} onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              Save
+            </Button>
+          </div>
         </div>
       </form>
     </Modal>
