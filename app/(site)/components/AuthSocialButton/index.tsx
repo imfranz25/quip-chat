@@ -29,7 +29,8 @@ const AuthSocialButton: React.FC<AuthSocialButtonProp> = ({
         ring-1 
         ring-inset 
         ring-gray-300 
-        hover:bg-gray-500
+        hover:bg-gray-50
+        focus:outline-offset-0
       "
     >
       <Icon />
