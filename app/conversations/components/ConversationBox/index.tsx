@@ -1,13 +1,15 @@
 'use client';
 
 import clsx from 'clsx';
-import React, { useCallback, useMemo } from 'react';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import useOtherUser from '@/app/hooks/useOtherUser';
+import React, { useCallback, useMemo } from 'react';
+
 import { FullConversationType } from '@/app/types';
+import useOtherUser from '@/app/hooks/useOtherUser';
 import Avatar from '@/app/components/Sidebar/Avatar';
+import AvatarGroup from '@/app/components/AvatarGroups';
 
 interface ConversationBoxProps {
   conversation: FullConversationType;
@@ -74,7 +76,11 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
         selected ? 'bg-neutral-100' : 'bg-white',
       )}
     >
-      <Avatar user={otherUser} />
+      {conversation.isGroup ? (
+        <AvatarGroup users={conversation.users} />
+      ) : (
+        <Avatar user={otherUser} />
+      )}
       <div className="min-w-0 flex-1">
         <div className="focus:outline-none">
           <div className="flex justify-between items-center mb-1">
