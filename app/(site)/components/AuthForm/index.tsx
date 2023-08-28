@@ -77,21 +77,26 @@ const AuthForm = () => {
     }
   };
 
-  const socialActions = useCallback(async (action: string) => {
-    setIsLoading(true);
+  const socialActions = useCallback(
+    async (action: string) => {
+      if (isLoading) return;
 
-    const socialAuthResponse = await signIn(action, { redirect: false });
+      setIsLoading(true);
 
-    if (socialAuthResponse?.error) {
-      toast.error('Invalid credentials');
-    }
+      const socialAuthResponse = await signIn(action, { redirect: false });
 
-    if (socialAuthResponse?.ok && !socialAuthResponse?.error) {
-      toast.success('Login success');
-    }
+      if (socialAuthResponse?.error) {
+        toast.error('Invalid credentials');
+      }
 
-    setIsLoading(false);
-  }, []);
+      if (socialAuthResponse?.ok && !socialAuthResponse?.error) {
+        toast.success('Login success');
+      }
+
+      setIsLoading(false);
+    },
+    [isLoading],
+  );
 
   return (
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
