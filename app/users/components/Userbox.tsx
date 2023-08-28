@@ -16,9 +16,9 @@ const Userbox: React.FC<UserboxProps> = ({ user }) => {
   const router = useRouter();
 
   const handleClick = useCallback(async () => {
-    try {
-      toast.loading('Wait for a moment...');
+    const toastLoading = toast.loading('Wait for a moment...');
 
+    try {
       const response = await axios.post('/api/conversations', {
         userId: user.id,
       });
@@ -27,7 +27,7 @@ const Userbox: React.FC<UserboxProps> = ({ user }) => {
     } catch (error: unknown) {
       toast.error('Something went wrong');
     } finally {
-      toast.dismiss();
+      toast.dismiss(toastLoading);
     }
   }, [user.id, router]);
 
