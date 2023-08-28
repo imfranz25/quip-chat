@@ -13,7 +13,7 @@ export const POST = async (request: NextRequest) => {
 
     const { userId, isGroup, members, name } = await request.json();
 
-    if (isGroup && (!members || members.length < 2 || name)) {
+    if (isGroup && (!members || members.length < 2 || !name)) {
       return new NextResponse('Invalid payload', { status: 400 });
     }
 
