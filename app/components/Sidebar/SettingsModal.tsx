@@ -6,13 +6,14 @@ import Image from 'next/image';
 import { User } from '@prisma/client';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
 import Modal from '../Modal';
 import Input from '../Input';
 import Button from '../Button';
-import { fileToBase64 } from '@/app/libs/filetoBase64';
+import { CldUploadButton } from 'next-cloudinary';
+// import { fileToBase64 } from '@/app/libs/filetoBase64';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -31,31 +32,32 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   const {
     watch,
     register,
-    setValue,
+    // setValue,
     handleSubmit,
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
       name: currentUser?.name,
-      image: currentUser?.image,
+      // image: currentUser?.image,
     },
   });
 
   const image = watch('image');
-  const handleUpload = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>) => {
-      if (!event.target.files) return;
 
-      const file = event.target.files[0];
+  // const handleUpload = useCallback(
+  //   async (event: ChangeEvent<HTMLInputElement>) => {
+  //     if (!event.target.files) return;
 
-      if (!file) return;
+  //     const file = event.target.files[0];
 
-      const base64 = await fileToBase64(file);
+  //     if (!file) return;
 
-      setValue('image', base64, { shouldValidate: true });
-    },
-    [setValue],
-  );
+  //     const base64 = await fileToBase64(file);
+
+  //     setValue('image', base64, { shouldValidate: true });
+  //   },
+  //   [setValue],
+  // );
 
   const onSubmit: SubmitHandler<FieldValues> = useCallback(
     async (data) => {
@@ -65,6 +67,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         await axios.post('/api/settings', data);
 
         router.refresh();
+        toast.success('Name updated');
         onClose();
       } catch (error) {
         toast.error('Something went wrong');
@@ -73,6 +76,23 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
       }
     },
     [onClose, router],
+  );
+
+  const handleUpload = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (result: any) => {
+      try {
+        await axios.post('/api/settings', {
+          image: result?.info?.secure_url,
+        });
+
+        router.refresh();
+        toast.success('Profile image uploaded');
+      } catch (error) {
+        toast.error('Something went wrong');
+      }
+    },
+    [router],
   );
 
   return (
@@ -109,24 +129,32 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   src={image || currentUser?.image || '/images/avatar.jpg'}
                 />
                 <div>
-                  <label
-                    htmlFor="image-upload"
-                    className={clsx(
-                      `border py-2 px-3 cursor-pointer rounded-md bg-sky-500 text-white`,
-                      isLoading && 'cursor-not-allowed',
-                    )}
+                  <CldUploadButton
+                    onUpload={handleUpload}
+                    options={{ maxFiles: 1 }}
+                    uploadPreset={
+                      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+                    }
                   >
-                    Upload
-                  </label>
+                    <label
+                      htmlFor="image-upload"
+                      className={clsx(
+                        `border py-2 px-3 cursor-pointer rounded-md bg-sky-500 text-white`,
+                        isLoading && 'cursor-not-allowed',
+                      )}
+                    >
+                      Upload
+                    </label>
+                  </CldUploadButton>
 
-                  <input
+                  {/* <input
                     type="file"
                     id="image-upload"
                     className="hidden"
                     disabled={isLoading}
                     onChange={handleUpload}
                     accept="image/png, image/jpg, image/jpeg"
-                  />
+                  /> */}
                 </div>
               </div>
             </div>

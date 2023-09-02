@@ -11,10 +11,14 @@ export const POST = async (request: Request) => {
     }
 
     const { name, image } = await request.json();
-    const newData = { name } as { name: string; image?: string };
+    const newData = {} as { name?: string; image?: string };
 
     if (image) {
       newData.image = image;
+    }
+
+    if (name) {
+      newData.name = name;
     }
 
     const updatedUser = await prisma.user.update({

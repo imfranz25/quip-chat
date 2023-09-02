@@ -36,11 +36,7 @@ export const POST = async (request: Request) => {
       },
       include: {
         seen: true,
-        sender: {
-          select: {
-            id: true,
-          },
-        },
+        sender: true,
       },
     });
 
