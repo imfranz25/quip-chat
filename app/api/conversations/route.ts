@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import prisma from '@/app/libs/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import { pusherServer } from '@/app/libs/pusherSocket';
 
 export const POST = async (request: NextRequest) => {
   try {
@@ -34,6 +35,16 @@ export const POST = async (request: NextRequest) => {
         include: {
           users: true,
         },
+      });
+
+      newGroupConversation.users.forEach((user) => {
+        if (user.email) {
+          pusherServer.trigger(
+            user.email,
+            'conversation:new',
+            newGroupConversation,
+          );
+        }
       });
 
       return NextResponse.json(newGroupConversation);
@@ -69,6 +80,12 @@ export const POST = async (request: NextRequest) => {
       include: {
         users: true,
       },
+    });
+
+    newConversation.users.map((user) => {
+      if (user.email) {
+        pusherServer.trigger(user.email, 'conversation:new', newConversation);
+      }
     });
 
     return NextResponse.json(newConversation);
