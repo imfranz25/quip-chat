@@ -12,6 +12,7 @@ import ConversationBox from '../ConversationBox';
 import { FullConversationType } from '@/app/types';
 import useConversation from '@/app/hooks/useConversation';
 import { pusherClient } from '@/app/libs/pusherSocket';
+import { useRouter } from 'next/navigation';
 
 interface ConversationListProps {
   users: User[];
@@ -22,6 +23,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
   users,
   initialConversation,
 }) => {
+  const router = useRouter();
   const session = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [convoItems, setConvoItems] = useState(initialConversation);
@@ -56,19 +58,34 @@ const ConversationList: React.FC<ConversationListProps> = ({
     );
   }, []);
 
+  const removeHandler = useCallback(
+    (conversation: FullConversationType) => {
+      setConvoItems((current) => {
+        return [...current.filter((convo) => convo.id !== conversation.id)];
+      });
+
+      if (conversationId === conversation.id) {
+        router.push('/conversations');
+      }
+    },
+    [router, conversationId],
+  );
+
   useEffect(() => {
     if (!pusherKey) return;
 
     pusherClient.subscribe(pusherKey);
     pusherClient.bind('conversation:new', newHandler);
     pusherClient.bind('conversation:update', updateHandler);
+    pusherClient.bind('conversation:remove', removeHandler);
 
     return () => {
       pusherClient.unsubscribe(pusherKey);
       pusherClient.unbind('conversation:new', newHandler);
       pusherClient.unbind('conversation:update', updateHandler);
+      pusherClient.unbind('conversation:remove', removeHandler);
     };
-  }, [pusherKey, newHandler, updateHandler]);
+  }, [pusherKey, newHandler, updateHandler, removeHandler]);
 
   return (
     <>
