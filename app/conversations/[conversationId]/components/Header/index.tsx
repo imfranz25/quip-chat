@@ -10,6 +10,7 @@ import ProfileDrawer from '../ProfileDrawer';
 import useOtherUser from '@/app/hooks/useOtherUser';
 import Avatar from '@/app/components/Sidebar/Avatar';
 import AvatarGroup from '@/app/components/AvatarGroups';
+import useActiveList from '@/app/hooks/useActiveList';
 
 interface HeaderProps {
   conversation: Conversation & {
@@ -18,16 +19,20 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ conversation }) => {
+  const { members } = useActiveList();
   const otherUser = useOtherUser(conversation);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+  const isActive = members.indexOf(otherUser?.email!) !== -1;
 
   const statusText = useMemo(() => {
     if (conversation.isGroup) {
       return `${conversation.users.length} members`;
     }
 
-    return 'Active';
-  }, [conversation]);
+    return isActive ? 'Active' : 'Offline';
+  }, [conversation, isActive]);
 
   return (
     <>

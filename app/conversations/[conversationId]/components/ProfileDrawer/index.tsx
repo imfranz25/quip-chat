@@ -9,6 +9,7 @@ import React, { Fragment, useMemo, useState } from 'react';
 import ConfirmModal from '../ConfirmModal';
 import useOtherUser from '@/app/hooks/useOtherUser';
 import Avatar from '@/app/components/Sidebar/Avatar';
+import useActiveList from '@/app/hooks/useActiveList';
 import AvatarGroup from '@/app/components/AvatarGroups';
 
 interface ProfileDrawerProps {
@@ -24,8 +25,12 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   isDrawerOpen,
   conversation,
 }) => {
+  const { members } = useActiveList();
   const otherUser = useOtherUser(conversation);
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+  const isActive = members.indexOf(otherUser?.email!) !== -1;
 
   const joinedDate = useMemo(() => {
     return format(new Date(otherUser.createdAt), 'PP');
@@ -40,8 +45,8 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
       return `${conversation.users.length} members`;
     }
 
-    return 'Active now';
-  }, [conversation.isGroup, conversation.users]);
+    return isActive ? 'Active' : 'Offline';
+  }, [conversation.isGroup, conversation.users, isActive]);
 
   return (
     <>
